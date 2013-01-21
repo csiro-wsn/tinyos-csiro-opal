@@ -1,0 +1,19 @@
+#-*-Makefile-*- vim:syntax=make
+
+PROGRAM = bossa
+
+PORT =
+
+ifdef BOSSA
+  PORT= -p $(BOSSA)
+endif
+
+PROGRAMMER ?= bossac
+
+DELUGE_BASE_EXE=$(BUILDDIR)/deluge-base.exe
+DELUGE_BASE_BIN=$(BUILDDIR)/deluge-base.bin
+
+program: FORCE
+	@echo "    installing $(PLATFORM) binary using $(PROGRAM)"
+	$(PROGRAMMER) -e -w -v -b -a $(PORT) $(INSTALL_BIN)
+

@@ -1,0 +1,8 @@
+#-*-Makefile-*- vim:syntax=make
+
+ifeq ($(SERIAL),usb)
+  PFLAGS += -DOPAL_USB_SERIAL
+else
+  PFLAGS += -DOPAL_UART_SERIAL
+endif
+
