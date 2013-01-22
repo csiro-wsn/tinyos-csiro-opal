@@ -1,0 +1,10 @@
+#-*-Makefile-*- vim:syntax=make
+
+ifeq ($(RADIO),rf230)
+  PFLAGS += -DOPAL_RADIO_RF230
+endif
+
+ifeq ($(RADIO),rf212)
+  PFLAGS += -DOPAL_RADIO_RF212
+endif
+

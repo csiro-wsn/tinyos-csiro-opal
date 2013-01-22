@@ -51,7 +51,8 @@
 #endif
 
 // define default radio
-#ifndef OPAL_RADIO_RF230
+#if defined(OPAL_RADIO_RF230) || defined(OPAL_RADIO_RF212)
+#else
 #define OPAL_RADIO_RF230
 #endif
 
