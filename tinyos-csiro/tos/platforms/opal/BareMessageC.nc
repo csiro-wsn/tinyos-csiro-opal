@@ -16,7 +16,7 @@ implementation
 
   #if defined(OPAL_RADIO_RF212)
         components RF212BareMessageC as BareMessageC;
-  #else
+  #elif defined(OPAL_RADIO_RF230)
         components RF230BareMessageC as BareMessageC;
   #endif
 

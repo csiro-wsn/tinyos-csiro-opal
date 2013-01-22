@@ -64,7 +64,7 @@ implementation
 
   #if defined(OPAL_RADIO_RF212)
         components RF212Ieee154MessageC as MessageC;
-  #else
+  #elif defined(OPAL_RADIO_RF230)
         components RF230Ieee154MessageC as MessageC;
   #endif
 

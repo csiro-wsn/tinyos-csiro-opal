@@ -50,6 +50,11 @@
 #define PLATFORM_BAUDRATE (115200)
 #endif
 
+// define default radio
+#ifndef OPAL_RADIO_RF230
+#define OPAL_RADIO_RF230
+#endif
+
 #define IRQ_PRIO_RTT      (0x80)
 #define IRQ_PRIO_TC       (0x80)
 #define IRQ_PRIO_UDPHS    (0x81)

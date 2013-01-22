@@ -55,13 +55,10 @@ implementation {
 
 
   #if defined(OPAL_RADIO_RF212)
-    #warning "Using RF212 as default radio"
+    #warning "Using RF212 as default radio for AM"
     components RF212ActiveMessageC as AM;
-  #else
-    #warning "Using RF230 as default radio"
-    #ifndef OPAL_RADIO_RF230
-      #define OPAL_RADIO_RF230
-    #endif
+  #elif defined(OPAL_RADIO_RF230)
+    #warning "Using RF230 as default radio for AM"
     components RF230ActiveMessageC as AM;
   #endif
 
