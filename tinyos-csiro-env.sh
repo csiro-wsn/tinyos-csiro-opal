@@ -21,6 +21,6 @@ export TOSROOT_CSIRO=$CSIRO_GIT_TOS/tinyos-csiro
 
 # this is to find all CSIRO related files
 export TOSDIR_CSIRO=$TOSROOT_CSIRO/tos
-Thexport TOSMAKE_PATH=$TOSROOT_CSIRO/support/make
+export TOSMAKE_PATH=$TOSROOT_CSIRO/support/make
 export PATH=$PATH:$TOSROOT_CSIRO/support/sdk/c/sf
 export PYTHONPATH=$TOSROOT_CSIRO/support/sdk/python:$PYTHONPATH
