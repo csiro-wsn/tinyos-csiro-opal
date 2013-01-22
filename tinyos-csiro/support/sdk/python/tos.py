@@ -128,9 +128,9 @@ class Serial:
 
     def putBytes(self, data):
         #print "DEBUG: putBytes:", data
-	    sbuf = StringIO.StringIO()
+        sbuf = StringIO.StringIO()
         for b in data:
-	        sbuf.write(struct.pack('B', b))
+            sbuf.write(struct.pack('B', b))
         self._s.write(sbuf.getvalue())
         
     def getTimeout(self):
