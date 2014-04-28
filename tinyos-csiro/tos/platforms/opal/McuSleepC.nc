@@ -123,7 +123,6 @@ implementation{
 
   uint32_t getPowerState() {
     //if (PMC->pc.pcsr.flat & PMC_PIO_CLOCK_MASK)
-#ifndef DEBUG_CORE
     if (
          PMC->pc.pcsr.bits.rtc    || 
          PMC->pc.pcsr.bits.rtt    || 
@@ -158,11 +157,6 @@ implementation{
       return S_SLEEP;
     else 
       return S_WAIT;
-
-#else
-  #warning "Sleep mode disabled for debugging"
-  return S_AWAKE;
-#endif
   }
 
   void commonSleep() {
@@ -173,6 +167,9 @@ implementation{
     // for use.
     //if(!(TC->ch2.imr.bits.cpcs & 0x01))
     //  PMC->pc.pcdr.bits.tc2 = 1;
+    
+    // signal event on pending interrupt    
+    SCB->scr.bits.sevonpend = 1;
   }
 
   void commonResume() {
@@ -307,38 +304,26 @@ implementation{
         setupSleepMode();
     }
 
+    __nesc_enable_interrupt();
 
     // Enter appropriate idle mode
-    if(ps != S_AWAKE) {
-
-#ifndef DEBUG_CORE
-      __asm volatile ("wfi");
-
-      // wait here until interrupt occurs
-
-      // enable execution of interrupts
-      __nesc_enable_interrupt();
-	
-      // pending interrupts are executed right here
-  
-      __nesc_disable_interrupt();
-
-      // all of memory may change at this point, because an IRQ handler
-      // may have posted a task!
-      asm volatile("" : : : "memory");
-#endif
-    }
+    if(ps != S_AWAKE)
+      __asm volatile ("wfe");
 
     // Normally, at this point we can only be woken up by an interrupt, so execution continues
     // in the body of the InterruptWrapper.preamble() command before returning to here
     // However, if we never actually went to sleep, we need to force this command to run.
-    else 
+    if(ps == S_AWAKE)
       call InterruptWrapper.preamble();
+  
+    // all of memory may change at this point, because an IRQ handler
+    // may have posted a task!
+    asm volatile("" : : : "memory");
 
+    __nesc_disable_interrupt();
   }
 
   async command void InterruptWrapper.preamble() {
-
     atomic {
       switch(ps) {
         case S_AWAKE:
@@ -365,9 +350,7 @@ implementation{
       ps = S_AWAKE;
     }
   }
-  async command void InterruptWrapper.postamble() { 
-
-/* Do nothing */ }
+  async command void InterruptWrapper.postamble() { /* Do nothing */ }
   async command void McuPowerState.update(){}
   async event void HplSam3Clock.mainClockChanged(){}
 
