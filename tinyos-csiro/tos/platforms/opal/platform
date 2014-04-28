@@ -7,7 +7,6 @@ $TOSDIR_CSIRO = $ENV{'TOSDIR_CSIRO'};
 
 push ( @includes,
   "$TOSDIR_CSIRO/system",
-
   # CSIRO modifications to Cortex-M3
   "$TOSDIR_CSIRO/chips/cortex/m3",
   "$TOSDIR_CSIRO/chips/cortex/m3/sam3/eefc",
@@ -61,13 +60,17 @@ push ( @includes,
   "%T/chips/cortex/m3/sam3/u/twi",
   "%T/chips/cortex/m3/sam3/u/hsmci",
   "%T/chips/cortex/m3/sam3/u/usb",
+  "$TOSDIR_CSIRO/chips/rf212",
   "%T/chips/rf212",
-  "%T/chips/rf230",
+  "$TOSDIR_CSIRO/chips/rf231",
   "%T/chips/at45db",
   "$TOSDIR_CSIRO/chips/mcp9800",
   "%T/lib/timer",
+  "$TOSDIR_CSIRO/lib/rfxlink/layers",
   "%T/lib/rfxlink/layers",
+  "$TOSDIR_CSIRO/lib/rfxlink/util",
   "%T/lib/rfxlink/util",
+  "$TOSDIR_CSIRO/lib/net/blip/interfaces",
   "%T/lib/serial",
   "%T/lib/power",
 );

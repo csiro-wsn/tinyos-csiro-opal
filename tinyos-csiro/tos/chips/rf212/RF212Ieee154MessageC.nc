@@ -30,53 +30,69 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * Author: Miklos Maroti
- * @author Philipp Sommer <philipp.sommer@csiro.au> (Opal port)
  */
 
 #include <RadioConfig.h>
 
-configuration TimeSyncMessageC
+#ifdef TFRAMES_ENABLED
+#error "You cannot use Ieee154MessageC with TFRAMES_ENABLED defined"
+#endif
+
+configuration RF212Ieee154MessageC
 {
-	provides
+	provides 
 	{
 		interface SplitControl;
 
-		interface Receive[uint8_t id];
-		interface Receive as Snoop[am_id_t id];
+		interface Ieee154Send;
+		interface Receive as Ieee154Receive;
+		interface SendNotifier;
+
+		interface Ieee154Packet;
 		interface Packet;
-		interface AMPacket;
+		interface Resource as SendResource[uint8_t clint];
 
+		interface PacketAcknowledgements;
+		interface LowPowerListening;
+		interface PacketLink;
+
+		interface RadioChannel;
+
+		interface PacketField<uint8_t> as PacketLinkQuality;
+		interface PacketField<uint8_t> as PacketTransmitPower;
+		interface PacketField<uint8_t> as PacketRSSI;
+
+		interface LocalTime<TRadio> as LocalTimeRadio;
 		interface PacketTimeStamp<TRadio, uint32_t> as PacketTimeStampRadio;
-		interface TimeSyncAMSend<TRadio, uint32_t> as TimeSyncAMSendRadio[am_id_t id];
-		interface TimeSyncPacket<TRadio, uint32_t> as TimeSyncPacketRadio;
-
 		interface PacketTimeStamp<TMilli, uint32_t> as PacketTimeStampMilli;
-		interface TimeSyncAMSend<TMilli, uint32_t> as TimeSyncAMSendMilli[am_id_t id];
-		interface TimeSyncPacket<TMilli, uint32_t> as TimeSyncPacketMilli;
 	}
 }
 
 implementation
 {
+	components RF212RadioC;
 
+	SplitControl = RF212RadioC;
 
-	#if defined(OPAL_RADIO_RF212)
-	        components RF212TimeSyncMessageC as MessageC;
-    #else
-	        components RF231TimeSyncMessageC as MessageC;
-	#endif
-  
-	SplitControl	= MessageC;
-  	Receive		= MessageC.Receive;
-	Snoop		= MessageC.Snoop;
-	Packet		= MessageC;
-	AMPacket	= MessageC;
+	Ieee154Send = RF212RadioC.Ieee154Send;
+	Ieee154Receive = RF212RadioC.Ieee154Receive;
+	SendNotifier = RF212RadioC.Ieee154Notifier;
 
-	PacketTimeStampRadio	= MessageC;
-	TimeSyncAMSendRadio	= MessageC;
-	TimeSyncPacketRadio	= MessageC;
+	Packet = RF212RadioC.PacketForIeee154Message;
+	Ieee154Packet = RF212RadioC;
+	SendResource = RF212RadioC;
 
-	PacketTimeStampMilli	= MessageC;
-	TimeSyncAMSendMilli	= MessageC;
-	TimeSyncPacketMilli	= MessageC;
+	PacketAcknowledgements = RF212RadioC;
+	LowPowerListening = RF212RadioC;
+	PacketLink = RF212RadioC;
+
+	RadioChannel = RF212RadioC;
+
+	PacketLinkQuality = RF212RadioC.PacketLinkQuality;
+	PacketTransmitPower = RF212RadioC.PacketTransmitPower;
+	PacketRSSI = RF212RadioC.PacketRSSI;
+
+	LocalTimeRadio = RF212RadioC;
+	PacketTimeStampMilli = RF212RadioC;
+	PacketTimeStampRadio = RF212RadioC;
 }

@@ -33,23 +33,23 @@
 #define PLATFORM_MESSAGE_H
 
 #include <RF212Radio.h>
-#include <RF230Radio.h>
+#include <RF231Radio.h>
 #include <Serial.h>
 
 typedef union message_header {
     rf212packet_header_t rf212;
-    rf230packet_header_t rf230;
+    rf231packet_header_t rf231;
     serial_header_t serial;
 } message_header_t;
 
 typedef union message_footer {
     rf212packet_footer_t rf212;
-    rf230packet_footer_t rf230;
+    rf231packet_footer_t rf231;
 } message_footer_t;
 
 typedef union message_metadata {
     rf212packet_metadata_t rf212;
-    rf230packet_metadata_t rf230;
+    rf231packet_metadata_t rf231;
     serial_metadata_t serial;
 } message_metadata_t;
 

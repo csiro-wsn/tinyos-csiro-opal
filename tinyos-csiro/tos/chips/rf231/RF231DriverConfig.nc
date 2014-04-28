@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 CSIRO
+ * Copyright (c) 2007, Vanderbilt University
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -12,7 +12,7 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the
  *   distribution.
- * - Neither the name of the copyright holders nor the names of
+ * - Neither the name of the copyright holder nor the names of
  *   its contributors may be used to endorse or promote products derived
  *   from this software without specific prior written permission.
  *
@@ -29,47 +29,38 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * @author Philipp Sommer <philipp.sommer@csiro.au>
+ * Author: Miklos Maroti
  */
 
-#include "TestRadio.h"
+interface RF231DriverConfig
+{
+	/**
+	 * Returns the length of a dummy header to align the payload properly.
+	 */
+	async command uint8_t headerLength(message_t* msg);
 
+	/**
+	 * Returns the maximum length of the PHY payload including the 
+	 * length field but not counting the FCF field.
+	 */
+	async command uint8_t maxPayloadLength();
 
-configuration TestRadioAppC {}
-implementation {
-  components MainC, TestRadioC as App, LedsC;
+	/**
+	 * Returns the length of a dummy metadata section to align the
+	 * metadata section properly.
+	 */
+	async command uint8_t metadataLength(message_t* msg);
 
+	/**
+	 * Gets the number of bytes we should read before the RadioReceive.header
+	 * event is fired. If the length of the packet is less than this amount, 
+	 * then that event is fired earlier. The header length must be at least one.
+	 */
+	async command uint8_t headerPreloadLength();
 
-  #if defined(OPAL_RADIO_RF231)
-    components RF231ActiveMessageC as ActiveMessageC;
-  #elif defined(OPAL_RADIO_RF212)
-    components RF212ActiveMessageC as ActiveMessageC;
-  #endif
-
-  components new TimerMilliC() as SendTimer, new TimerMilliC() as StartupTimer, new TimerMilliC() as BlinkTimer;
-    
-  App.Boot -> MainC.Boot;
-
-  App.Receive -> ActiveMessageC.Receive[AM_RADIO_TEST_MSG];
-  App.AMSend -> ActiveMessageC.AMSend[AM_RADIO_TEST_MSG];
-  App.SplitControl -> ActiveMessageC;
-  App.Packet -> ActiveMessageC;
-  App.AMPacket -> ActiveMessageC;
-
-  App.Leds -> LedsC;
-  App.MilliTimer -> SendTimer;
-  App.StartupTimer -> StartupTimer;
-  App.BlinkTimer -> BlinkTimer;
-
-  components SerialPrintfC, SerialStartC;
-
-
-  App.PacketRSSI -> ActiveMessageC.PacketRSSI;
-  App.PacketLinkQuality -> ActiveMessageC.PacketLinkQuality;
-
-  components RandomC;
-  App.Random -> RandomC;
-
+	/**
+	 * Returns TRUE if before sending this message we should make sure that
+	 * the channel is clear via a very basic (and quick) RSSI check.
+	 */
+	async command bool requiresRssiCca(message_t* msg);
 }
-
-

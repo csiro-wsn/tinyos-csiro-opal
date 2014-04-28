@@ -36,7 +36,7 @@
 
 #include <RadioConfig.h>
 
-configuration HplRF230C
+configuration HplRF231C
 {
     provides
     {
@@ -62,7 +62,7 @@ implementation
     SpiResource = SpiC;
     FastSpiByte = SpiC;
 
-    components RF230SpiConfigC as RadioSpiConfigC;
+    components RF231SpiConfigC as RadioSpiConfigC;
     RadioSpiConfigC.Init <- SpiC;
     RadioSpiConfigC.ResourceConfigure <- SpiC;
     RadioSpiConfigC.HplSam3SpiChipSelConfig -> SpiC;

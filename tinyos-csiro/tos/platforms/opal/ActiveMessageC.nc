@@ -57,9 +57,9 @@ implementation {
   #if defined(OPAL_RADIO_RF212)
     #warning "Using RF212 as default radio for AM"
     components RF212ActiveMessageC as AM;
-  #elif defined(OPAL_RADIO_RF230)
-    #warning "Using RF230 as default radio for AM"
-    components RF230ActiveMessageC as AM;
+  #elif defined(OPAL_RADIO_RF231)
+    #warning "Using RF231 as default radio for AM"
+    components RF231ActiveMessageC as AM;
   #endif
 
   SplitControl = AM.SplitControl;

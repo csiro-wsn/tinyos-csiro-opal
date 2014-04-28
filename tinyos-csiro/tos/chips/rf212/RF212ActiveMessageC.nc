@@ -30,53 +30,79 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * Author: Miklos Maroti
- * @author Philipp Sommer <philipp.sommer@csiro.au> (Opal port)
  */
 
 #include <RadioConfig.h>
 
-configuration TimeSyncMessageC
+#ifdef IEEE154FRAMES_ENABLED
+#error "You cannot use ActiveMessageC with IEEE154FRAMES_ENABLED defined"
+#endif
+
+configuration RF212ActiveMessageC
 {
-	provides
+	provides 
 	{
 		interface SplitControl;
 
-		interface Receive[uint8_t id];
+		interface AMSend[am_id_t id];
+		interface Receive[am_id_t id];
 		interface Receive as Snoop[am_id_t id];
+		interface SendNotifier[am_id_t id];
+
+		// for TOSThreads
+		interface Receive as ReceiveDefault[am_id_t id];
+		interface Receive as SnoopDefault[am_id_t id];
+
 		interface Packet;
 		interface AMPacket;
 
-		interface PacketTimeStamp<TRadio, uint32_t> as PacketTimeStampRadio;
-		interface TimeSyncAMSend<TRadio, uint32_t> as TimeSyncAMSendRadio[am_id_t id];
-		interface TimeSyncPacket<TRadio, uint32_t> as TimeSyncPacketRadio;
+		interface PacketAcknowledgements;
+		interface LowPowerListening;
+		interface PacketLink;
+		interface RadioChannel;
 
+		interface PacketField<uint8_t> as PacketLinkQuality;
+		interface PacketField<uint8_t> as PacketTransmitPower;
+		interface PacketField<uint8_t> as PacketRSSI;
+		interface LinkPacketMetadata;
+
+		interface Read<uint8_t> as ReadRSSI;
+
+		interface LocalTime<TRadio> as LocalTimeRadio;
+		interface PacketTimeStamp<TRadio, uint32_t> as PacketTimeStampRadio;
 		interface PacketTimeStamp<TMilli, uint32_t> as PacketTimeStampMilli;
-		interface TimeSyncAMSend<TMilli, uint32_t> as TimeSyncAMSendMilli[am_id_t id];
-		interface TimeSyncPacket<TMilli, uint32_t> as TimeSyncPacketMilli;
 	}
 }
 
 implementation
 {
+	components RF212RadioC as RadioC;
 
+	SplitControl = RadioC;
 
-	#if defined(OPAL_RADIO_RF212)
-	        components RF212TimeSyncMessageC as MessageC;
-    #else
-	        components RF231TimeSyncMessageC as MessageC;
-	#endif
-  
-	SplitControl	= MessageC;
-  	Receive		= MessageC.Receive;
-	Snoop		= MessageC.Snoop;
-	Packet		= MessageC;
-	AMPacket	= MessageC;
+	AMSend = RadioC;
+	Receive = RadioC.Receive;
+	Snoop = RadioC.Snoop;
+	SendNotifier = RadioC;
 
-	PacketTimeStampRadio	= MessageC;
-	TimeSyncAMSendRadio	= MessageC;
-	TimeSyncPacketRadio	= MessageC;
+	ReceiveDefault = RadioC.ReceiveDefault;
+	SnoopDefault = RadioC.SnoopDefault;
 
-	PacketTimeStampMilli	= MessageC;
-	TimeSyncAMSendMilli	= MessageC;
-	TimeSyncPacketMilli	= MessageC;
+	Packet = RadioC.PacketForActiveMessage;
+	AMPacket = RadioC;
+
+	PacketAcknowledgements = RadioC;
+	LowPowerListening = RadioC;
+	PacketLink = RadioC;
+	RadioChannel = RadioC;
+
+	PacketLinkQuality = RadioC.PacketLinkQuality;
+	PacketTransmitPower = RadioC.PacketTransmitPower;
+	PacketRSSI = RadioC.PacketRSSI;
+	LinkPacketMetadata = RadioC;
+	ReadRSSI = RadioC.ReadRSSI;
+
+	LocalTimeRadio = RadioC;
+	PacketTimeStampMilli = RadioC;
+	PacketTimeStampRadio = RadioC;
 }

@@ -29,7 +29,7 @@
 #define __RADIOCONFIG_H__
 
 #include <RF212DriverLayer.h>
-#include <RF230DriverLayer.h>
+#include <RF231DriverLayer.h>
 #include <Timer.h>
 
 #include <crc.h>
@@ -49,7 +49,7 @@ enum
 	 * which configures the output pin currents and the CLKM clock
 	 */
 	RF212_TRX_CTRL_0_VALUE = 0,
-	RF230_TRX_CTRL_0_VALUE = 0,
+	RF231_TRX_CTRL_0_VALUE = 0,
 
 	/**
 	 * This is the value of the TRX_CTRL_2 register
@@ -63,26 +63,25 @@ enum
 	 * which is used to configure the default mode of the clear channel assesment
 	 */
 	RF212_CCA_MODE_VALUE = RF212_CCA_MODE_3,
-	RF230_CCA_MODE_VALUE = RF230_CCA_MODE_3,
+	RF231_CCA_MODE_VALUE = RF231_CCA_MODE_3,
 
 	/**
 	 * This is the value of the CCA_THRES register that controls the
 	 * energy levels used for clear channel assesment
 	 */
 	RF212_CCA_THRES_VALUE = 0xC7,
-	RF230_CCA_THRES_VALUE = 0xC7,
+	RF231_CCA_THRES_VALUE = 0xC7,
 };
 
 #define RF212_SEND_RESOURCE "RF212_SEND_RESOURCE"
-#define RF230_SEND_RESOURCE "RF230_SEND_RESOURCE"
 #define RF231_SEND_RESOURCE "RF231_SEND_RESOURCE"
 
 /* This is the default value of the TX_PWR field of the PHY_TX_PWR register. */
 #ifndef RF212_DEF_RFPOWER
 #define RF212_DEF_RFPOWER   0x41 /* 0xc0 = 10dBm, 3dBm = 0x41 -3dBm*/
 #endif
-#ifndef RF230_DEF_RFPOWER
-#define RF230_DEF_RFPOWER   0x00 /* 3dBm */
+#ifndef RF231_DEF_RFPOWER
+#define RF231_DEF_RFPOWER   0x00 /* 3dBm */
 #endif
 
 
@@ -91,13 +90,13 @@ enum
 #define RF212_DEF_CHANNEL 6
 #warning "RF212 Channel is 6"
 #endif
-#ifndef RF230_DEF_CHANNEL
-#define RF230_DEF_CHANNEL 26
-#warning "RF230 Channel is 26"
+#ifndef RF231_DEF_CHANNEL
+#define RF231_DEF_CHANNEL 26
+#warning "RF231 Channel is 26"
 #endif
 
 /*
- * This is the command used to calculate the CRC for the RF230 chip. 
+ * This is the command used to calculate the CRC for the RF231 chip. 
  * TODO: Check why the default crcByte implementation is in a different endianness
  */
 
@@ -177,7 +176,7 @@ static inline uint16_t crc_itu_t_byte(uint16_t crc, const uint8_t data)
         return (crc << 8) ^ crc_itu_t_table[((crc >> 8) ^ byte_rev_table[data]) & 0xff];
 }
 
-inline uint16_t RF230_CRCBYTE_COMMAND(uint16_t crc, uint8_t data)
+inline uint16_t RF231_CRCBYTE_COMMAND(uint16_t crc, uint8_t data)
 {
   return crc_itu_t_byte(crc, data);
 }

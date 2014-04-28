@@ -73,8 +73,8 @@ implementation
     components RF212ActiveMessageC;
 #endif
 
-#ifndef __RF230DRIVERLAYER_H__
-    components RF230ActiveMessageC;
+#ifndef __RF231DRIVERLAYER_H__
+    components RF231ActiveMessageC;
 #endif
 
 

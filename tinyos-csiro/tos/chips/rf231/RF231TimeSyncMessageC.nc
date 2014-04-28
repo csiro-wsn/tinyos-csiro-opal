@@ -30,12 +30,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * Author: Miklos Maroti
- * @author Philipp Sommer <philipp.sommer@csiro.au> (Opal port)
  */
 
 #include <RadioConfig.h>
 
-configuration TimeSyncMessageC
+configuration RF231TimeSyncMessageC
 {
 	provides
 	{
@@ -45,6 +44,8 @@ configuration TimeSyncMessageC
 		interface Receive as Snoop[am_id_t id];
 		interface Packet;
 		interface AMPacket;
+		interface PacketAcknowledgements;
+		interface LowPowerListening;
 
 		interface PacketTimeStamp<TRadio, uint32_t> as PacketTimeStampRadio;
 		interface TimeSyncAMSend<TRadio, uint32_t> as TimeSyncAMSendRadio[am_id_t id];
@@ -58,25 +59,32 @@ configuration TimeSyncMessageC
 
 implementation
 {
-
-
-	#if defined(OPAL_RADIO_RF212)
-	        components RF212TimeSyncMessageC as MessageC;
-    #else
-	        components RF231TimeSyncMessageC as MessageC;
-	#endif
+	components RF231ActiveMessageC as ActiveMessageC, new TimeSyncMessageLayerC();
   
-	SplitControl	= MessageC;
-  	Receive		= MessageC.Receive;
-	Snoop		= MessageC.Snoop;
-	Packet		= MessageC;
-	AMPacket	= MessageC;
+	SplitControl	= ActiveMessageC;
+	AMPacket	= TimeSyncMessageLayerC;
+  	Receive		= TimeSyncMessageLayerC.Receive;
+	Snoop		= TimeSyncMessageLayerC.Snoop;
+	Packet		= TimeSyncMessageLayerC;
+	PacketAcknowledgements	= ActiveMessageC;
+	LowPowerListening	= ActiveMessageC;
 
-	PacketTimeStampRadio	= MessageC;
-	TimeSyncAMSendRadio	= MessageC;
-	TimeSyncPacketRadio	= MessageC;
+	PacketTimeStampRadio	= ActiveMessageC;
+	TimeSyncAMSendRadio	= TimeSyncMessageLayerC;
+	TimeSyncPacketRadio	= TimeSyncMessageLayerC;
 
-	PacketTimeStampMilli	= MessageC;
-	TimeSyncAMSendMilli	= MessageC;
-	TimeSyncPacketMilli	= MessageC;
+	PacketTimeStampMilli	= ActiveMessageC;
+	TimeSyncAMSendMilli	= TimeSyncMessageLayerC;
+	TimeSyncPacketMilli	= TimeSyncMessageLayerC;
+
+	TimeSyncMessageLayerC.PacketTimeStampRadio -> ActiveMessageC;
+	TimeSyncMessageLayerC.PacketTimeStampMilli -> ActiveMessageC;
+
+#ifdef RF231_HARDWARE_ACK
+	components RF231DriverHwAckC as DriverLayerC;
+#else
+	components RF231DriverLayerC as DriverLayerC;
+#endif
+	TimeSyncMessageLayerC.LocalTimeRadio -> DriverLayerC;
+	TimeSyncMessageLayerC.PacketTimeSyncOffset -> DriverLayerC.PacketTimeSyncOffset;
 }

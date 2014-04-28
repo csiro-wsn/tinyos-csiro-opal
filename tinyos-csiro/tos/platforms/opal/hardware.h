@@ -51,9 +51,9 @@
 #endif
 
 // define default radio
-#if defined(OPAL_RADIO_RF230) || defined(OPAL_RADIO_RF212)
+#if defined(OPAL_RADIO_RF231) || defined(OPAL_RADIO_RF212)
 #else
-#define OPAL_RADIO_RF230
+#define OPAL_RADIO_RF231
 #endif
 
 #define IRQ_PRIO_RTT      (0x80)

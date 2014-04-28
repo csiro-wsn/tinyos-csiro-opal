@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 CSIRO
+ * Copyright (c) 2007, Vanderbilt University
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -12,7 +12,7 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the
  *   distribution.
- * - Neither the name of the copyright holders nor the names of
+ * - Neither the name of the copyright holder nor the names of
  *   its contributors may be used to endorse or promote products derived
  *   from this software without specific prior written permission.
  *
@@ -29,47 +29,50 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * @author Philipp Sommer <philipp.sommer@csiro.au>
+ * Author: Miklos Maroti
  */
 
-#include "TestRadio.h"
+#ifndef __RF231RADIO_H__
+#define __RF231RADIO_H__
 
+#include <RadioConfig.h>
+#include <TinyosNetworkLayer.h>
+#include <Ieee154PacketLayer.h>
+#include <ActiveMessageLayer.h>
+#include <MetadataFlagsLayer.h>
+#include <RF231DriverLayer.h>
+#include <TimeStampingLayer.h>
+#include <LowPowerListeningLayer.h>
+#include <PacketLinkLayer.h>
 
-configuration TestRadioAppC {}
-implementation {
-  components MainC, TestRadioC as App, LedsC;
+typedef nx_struct rf231packet_header_t
+{
+	rf231_header_t rf231;
+	ieee154_simple_header_t ieee154;
+#ifndef TFRAMES_ENABLED
+	network_header_t network;
+#endif
+#ifndef IEEE154FRAMES_ENABLED
+	activemessage_header_t am;
+#endif
+} rf231packet_header_t;
 
+typedef nx_struct rf231packet_footer_t
+{
+	// the time stamp is not recorded here, time stamped messaged cannot have max length
+} rf231packet_footer_t;
 
-  #if defined(OPAL_RADIO_RF231)
-    components RF231ActiveMessageC as ActiveMessageC;
-  #elif defined(OPAL_RADIO_RF212)
-    components RF212ActiveMessageC as ActiveMessageC;
-  #endif
+typedef struct rf231packet_metadata_t
+{
+#ifdef LOW_POWER_LISTENING
+	lpl_metadata_t lpl;
+#endif
+#ifdef PACKET_LINK
+	link_metadata_t link;
+#endif
+	timestamp_metadata_t timestamp;
+	flags_metadata_t flags;
+	rf231_metadata_t rf231;
+} rf231packet_metadata_t;
 
-  components new TimerMilliC() as SendTimer, new TimerMilliC() as StartupTimer, new TimerMilliC() as BlinkTimer;
-    
-  App.Boot -> MainC.Boot;
-
-  App.Receive -> ActiveMessageC.Receive[AM_RADIO_TEST_MSG];
-  App.AMSend -> ActiveMessageC.AMSend[AM_RADIO_TEST_MSG];
-  App.SplitControl -> ActiveMessageC;
-  App.Packet -> ActiveMessageC;
-  App.AMPacket -> ActiveMessageC;
-
-  App.Leds -> LedsC;
-  App.MilliTimer -> SendTimer;
-  App.StartupTimer -> StartupTimer;
-  App.BlinkTimer -> BlinkTimer;
-
-  components SerialPrintfC, SerialStartC;
-
-
-  App.PacketRSSI -> ActiveMessageC.PacketRSSI;
-  App.PacketLinkQuality -> ActiveMessageC.PacketLinkQuality;
-
-  components RandomC;
-  App.Random -> RandomC;
-
-}
-
-
+#endif//__RF231RADIO_H__
