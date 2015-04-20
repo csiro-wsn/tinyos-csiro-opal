@@ -23,6 +23,8 @@ __Important__: You need to have a working TinyOS installation on your system. Th
 ### Step 1: Installation of the ARM-Cortex toolchain
 The Opal platform features an Atmel SAM3U microcontroller which implements the ARM Cortex-M3 architecture. TinyOS does not come with a toolchain (compiler, linker, etc..) for the ARM Cortex-M3 yet. Therefore, it is required to install a separate toolchain supporting the ARM Cortex-M3 architecture. More information how to build a toolchain for the ARM Cortex-M3 can be found [here](https://github.com/csiro-wsn/csiro-cortex-tools/).
 
+**UPDATE:** Pre-built versions of a bare-metal ARM Cortex-M toolchain are available [here](https://launchpad.net/gcc-arm-embedded).
+
 ### Step 2: Installation of Opal-specific platform files for TinyOS
 
 1. Clone the "tinyos-csiro-opal" git repository to your local machine.
